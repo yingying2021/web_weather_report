@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ZH_CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我利用VScode创建的第一个界面</title>
+    <!-- 卡片类的CSS样式    -->
+    <style type="text/css">
+        .cardBox {
+            width: 600px;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+            text-align: center;
+            float: left;
+            padding-top: 15px;
+            margin-top: 10%;
+            margin-left: 30%;
+        }
+        .currectTime{
+            color:#b1794b;
+            font-size: 12;
+            text-align: center;
+        }
+        .todayTemp{
+            font-size: 35px;
+            color: #0000FF;
+        }
+
+        .headerBox {
+            background-color: #06ad92a9;
+            padding: 10px;
+            font-size: 15px;
+            height: 80px;
+        }
+
+        .bodyBox {
+            padding: 10px;
+        }
+
+        .today{
+            float: left;
+            width: 40%;
+        }
+        .future{
+            float: left;
+            width: 60%;
+        }
+        .future .day1{
+            float: left;
+            width: 33.3%;
+        }
+        .future .day2{
+            float: left;
+            width: 33.3%;
+        }
+        .future .day3{
+            float: left;
+            width: 33.3%;
+        }
+        .tomorrowWeather1{
+            font-size: 20px;
+        }
+        .tomorrowTime{
+            font-size: 15px;
+            color: hsl(36, 58%, 49%);
+        }
+        .todayIcon{
+            float: left;
+            width: 20%;
+        }
+        .todayWeather{
+            float: left;
+            width: 20%;
+            font-size: 20px;
+        }
+        .space{
+            float: left;
+            width: 30%;
+        }
+        .windDirection{
+            float: left;
+            width: 100%;
+        }
+    </style>
+</head>
+<body style="margin:0;width: 100%;" >
+    <div>
+        <div class="cardBox">
+            <div class="headerBox" >
+                <p>
+                    <a title="杭州天气" style="cursor: pointer; color:white; font-size: 30px;">杭州天气 </a>
+                    <br>
+                </p>
+            </div>
+            <div class="bodyBox">
+                <div class = "today">
+                    <div class = "currectTime" id = 'time'>时间：未知</div>
+                    <div class = "todayTemp" id = 'temp'>温度: 未知</div>  
+                    <div>
+                        <div class = "space">
+                            &nbsp;
+                        </div>
+                        <div class = "todayIcon">
+                            <img id = "todayWeatherIcon" src = "" width = "35" height = "35" />
+                        </div>  
+                        <div class = "todayWeather" id = 'weather'>
+                            天气: 未知
+                        </div>
+                        <div class = "space">
+                            &nbsp;
+                        </div>
+                    </div> 
+                    <div class = "windDirection" id = 'winddirection'>风向: 未知</div>
+                    <div id = 'humidity'>湿度: 未知</div> 
+                    <div><br></div> 
+                </div>
+
+                <div class = "future">
+                    <div class="day1">
+                    </br><div id = 'week1'>星期: 未知</div> 
+                        <div class ="tomorrowTime" id = 'tomorrowtime1'>时间：未知</div>
+                        <div id = 'daytemp1'>温度: 未知</div>
+                        <div class = "tomorrowWeather1" id ='dayweather1'>天气：未知</div>
+                        <div id = 'daywind1'>风向: 未知</div>
+                    </div>
+                    <div class="day2">
+                    </br><div id = 'week2'>星期: 未知</div> 
+                        <div class ="tomorrowTime" id = 'tomorrowtime2'>时间：未知</div>
+                        <div id = 'daytemp2'>温度: 未知</div> 
+                        <div class = "tomorrowWeather1" id ='dayweather2'>天气：未知</div>
+                        <div id = 'daywind2'>风向: 未知</div>
+                    </div>
+                    <div class="day3">
+                    </br> <div id = 'week3'>星期: 未知</div> 
+                        <div class ="tomorrowTime" id = 'tomorrowtime3'>时间：未知</div>
+                        <div id = 'daytemp3'>温度: 未知</div> 
+                        <div class = "tomorrowWeather1" id ='dayweather3'>天气：未知</div>
+                        <div id = 'daywind3'>风向: 未知</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script text="text/javascript">
+        function dateFormat(fmt, date) {
+        let ret;
+        const opt = {
+            "y+": date.getFullYear().toString(),        // 年
+            "M+": (date.getMonth() + 1).toString(),     // 月
+            "d+": date.getDate().toString(),            // 日
+            "h+": date.getHours().toString(),           // 时
+            "m+": date.getMinutes().toString(),         // 分
+            "s+": date.getSeconds().toString()          // 秒
+            // 有其他格式化字符需求可以继续添加，必须转化成字符串
+        };
+        for (let k in opt) {
+            ret = new RegExp("(" + k + ")").exec(fmt);
+            if (ret) {
+                fmt = fmt.replace(ret[1], (ret[1].length == 1) ? (opt[k]) : (opt[k].padStart(ret[1].length, "0")))
+            };
+        };
+        return fmt;
+    }
+      function getWeather() {
+        fetch('https://restapi.amap.com/v3/weather/weatherInfo?city=杭州&key=7abb865a84e4aa65ba5bf5e23e65d2b4')
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(result) {
+                // 显示杭州的温度
+                var temp = result.lives[0].temperature;
+                document.getElementById('temp').innerHTML = temp + "℃";
+                // 显示杭州的天气
+                var weather = result.lives[0].weather;
+                var weatherIcon = "";
+                if(weather == "晴"){ 
+                    weatherIcon = "晴天.png"; 
+                }else if(weather == "多云"){   
+                    weatherIcon = "多云.png";
+                }else if(console.log(weather.search("雨") != -1)) {
+                    weatherIcon = "雨.png"; 
+                }else if(console.log(weather.search("风") != -1)) {
+                    weatherIcon = "风.png"; 
+                }
+                // 将图片的名称更换
+                document.getElementById('todayWeatherIcon').src=weatherIcon;
+                document.getElementById('weather').innerHTML = weather;
+                // 显示当前时间
+                var time = new Date(result.lives[0].reporttime);
+                var newFormatTime = dateFormat("MM月dd日", time);
+                var weeks = new Array("星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六");
+                var weekday = weeks[time.getDay()];
+                document.getElementById('time').innerHTML = newFormatTime + "  " + weekday;
+                // 显示风向
+                var winddirection = result.lives[0].winddirection;
+                var windpower = result.lives[0].windpower;
+                document.getElementById('winddirection').innerHTML = winddirection + "风" + windpower+ "级";
+                // 显示湿度
+                var humidity = result.lives[0].humidity;
+                document.getElementById('humidity').innerHTML = "湿度:" + humidity;
+            });
+        
+            fetch('https://restapi.amap.com/v3/weather/weatherInfo?city=%E6%9D%AD%E5%B7%9E&key=7abb865a84e4aa65ba5bf5e23e65d2b4&extensions=all')
+              .then(function(response) {
+                  return response.json();
+              })
+              .then(function(result) {
+                  var weeks = new Array("星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日");
+                  // 显示杭州明天的星期
+                  var week1 = weeks[result.forecasts[0].casts[1].week - 1];
+                  document.getElementById('week1').innerHTML = week1;
+                  // 日期 
+                  var time = new Date(result.forecasts[0].casts[1].date);
+                  var newFormatTime = dateFormat("MM月dd日", time);
+                  document.getElementById('tomorrowtime1').innerHTML = newFormatTime;
+                  // 显示杭州明天的天气
+                  var dayweather1 = result.forecasts[0].casts[1].dayweather;
+                  document.getElementById('dayweather1').innerHTML = dayweather1;
+                  // 显示杭州明天的温度
+                  var daytemp1 = result.forecasts[0].casts[1].daytemp;
+                  var nighttemp1 = result.forecasts[0].casts[1].nighttemp;
+                  document.getElementById('daytemp1').innerHTML = nighttemp1 + "~" + daytemp1 + "℃";
+                  // 显示杭州明天的风向
+                  var daywind1 = result.forecasts[0].casts[1].daywind;
+                  var daypower1 = result.forecasts[0].casts[1].daypower;
+                  var nightpower1 = result.forecasts[0].casts[1].nightpower;
+                  var power = "-" ; if(daypower1==nightpower1) {power = daypower1;} 
+                              else if (daypower1>nightpower1) {power = nightpower1 + "-" + daypower1;} 
+                              else if (daypower1<nightpower1) {power = daypower1 + "-" + nightpower1;}
+                  document.getElementById('daywind1').innerHTML = daywind1 + "风" + power + "级";
+                  
+                  
+
+                  // 显示杭州后天的星期
+                  var week2 = weeks[result.forecasts[0].casts[2].week - 1];
+                  document.getElementById('week2').innerHTML = week2;
+                  // 日期 
+                  var time = new Date(result.forecasts[0].casts[2].date);
+                  var newFormatTime = dateFormat("MM月dd日", time);
+                  document.getElementById('tomorrowtime2').innerHTML = newFormatTime;
+                  // 显示杭州明天的天气
+                  var dayweather2 = result.forecasts[0].casts[2].dayweather;
+                  document.getElementById('dayweather2').innerHTML = dayweather2;
+                  // 显示杭州后天的温度
+                  var daytemp2 = result.forecasts[0].casts[2].daytemp;
+                  var nighttemp2 = result.forecasts[0].casts[2].nighttemp;
+                  document.getElementById('daytemp2').innerHTML = nighttemp2 + "~" + daytemp2 + "℃";
+                  // 显示杭州后天的风向
+                  var daywind2 = result.forecasts[0].casts[2].daywind;
+                  var daypower2 = result.forecasts[0].casts[2].daypower;
+                  var nightpower2 = result.forecasts[0].casts[2].nightpower;
+                  var power = "-" ; if(daypower2==nightpower2) {power = daypower2;} 
+                              else if (daypower2>nightpower2) {power = nightpower2 + "-" + daypower2;} 
+                              else if (daypower2<nightpower2) {power = daypower2 + "-" + nightpower2;}
+                  document.getElementById('daywind2').innerHTML = daywind2 + "风" + power + "级";
+                  
+                  
+
+
+
+                  // 显示杭州大后天的星期
+                  var week3 = weeks[result.forecasts[0].casts[3].week - 1];
+                  document.getElementById('week3').innerHTML = week3;
+                  // 日期 
+                  var time = new Date(result.forecasts[0].casts[3].date);
+                  var newFormatTime = dateFormat("MM月dd日", time);
+                  document.getElementById('tomorrowtime3').innerHTML = newFormatTime;
+                  // 显示杭州大后天的天气
+                  var dayweather3 = result.forecasts[0].casts[3].dayweather;
+                  document.getElementById('dayweather3').innerHTML = dayweather3;
+                  // 显示杭州大后天的温度
+                  var daytemp3 = result.forecasts[0].casts[3].daytemp;
+                  var nighttemp3 = result.forecasts[0].casts[3].nighttemp;
+                  document.getElementById('daytemp3').innerHTML = nighttemp3 + "~" + daytemp3 + "℃";
+                  // 显示杭州大后天的风向
+                  var daywind3 = result.forecasts[0].casts[3].daywind;
+                  var daypower3= result.forecasts[0].casts[3].daypower;
+                  var nightpower3 = result.forecasts[0].casts[3].nightpower;
+                  var power = "-" ; if(daypower3==nightpower3) {power = daypower3;} 
+                              else if (daypower3>nightpower3) {power = nightpower3 + "-" + daypower3;} 
+                              else if (daypower3<nightpower3) {power = daypower3 + "-" + nightpower3;}
+                  document.getElementById('daywind3').innerHTML = daywind3 + "风" + power + "级";
+                 
+              });
+      }
+        window.onload = getWeather;
+    </script>
+  </body>
+</html>
+
+<!-- 
+{
+    "status":"1",
+    "count":"1",
+    "info":"OK",
+    "infocode":"10000",
+    "forecasts":[
+    {
+        "city":"杭州市","adcode":"330100","province":"浙江","reporttime":"2021-10-06 23:06:47",
+        "casts":[
+        {"date":"2021-10-06","week":"3","dayweather":"小雨","nightweather":"小雨","daytemp":"31","nighttemp":"22","daywind":"东北","nightwind":"东北","daypower":"4","nightpower":"4"},
+        {"date":"2021-10-07","week":"4","dayweather":"小雨","nightweather":"小雨","daytemp":"29","nighttemp":"22","daywind":"东","nightwind":"东","daypower":"4","nightpower":"4"},
+        {"date":"2021-10-08","week":"5","dayweather":"小雨","nightweather":"多云","daytemp":"29","nighttemp":"22","daywind":"东","nightwind":"东","daypower":"4","nightpower":"4"},
+        {"date":"2021-10-09","week":"6","dayweather":"小雨","nightweather":"多云","daytemp":"30","nighttemp":"22","daywind":"东","nightwind":"东","daypower":"4","nightpower":"4"}
+        ]
+    }]
+}
+     -->
